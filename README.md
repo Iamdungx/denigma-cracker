@@ -1,6 +1,5 @@
-# EnigmaCracker
-EnigmaCracker is a tool for brute forcing Crypto Wallets
-
+# DEnigmaCracker
+DEnigmaCracker is a tool for brute forcing Crypto Wallets sourced and developed from [yaron4u](https://github.com/yaron4u/EnigmaCracker) by me.
 ## ⚠️**Disclaimer**⚠️
 
 This script is developed for educational and research purposes only.
@@ -20,7 +19,7 @@ We'll begin by delving into the foundational concepts. Upon establishing a walle
 
 If EnigmaCracker finds a wallet with a balance, it will create `wallets_with_balance.txt` file that will contain the info of the discovered wallet.
 
-Upon execution, EnigmaCracker generates a comprehensive log file named `enigmacracker.log`, which neatly records the entire session history for review and analysis.
+Upon execution, EnigmaCracker generates a comprehensive log file named `Log/enigmacracker_[time].log`, which neatly records the entire session history for review and analysis.
 
 # Technical Details
 
