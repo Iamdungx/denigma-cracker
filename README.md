@@ -88,7 +88,8 @@ python DEnigmaCracker.py
 Setting up EnigmaCracker on an AWS EC2 instance with your Docker image in Amazon ECR offers improved scalability and reliability for your wallet scanning tasks. This approach provides a streamlined and effective solution to harness EnigmaCracker’s full potential on a powerful cloud platform.
 
 ---
-## Updates
+## NEW Updates on Version 1.0
 
-- **Dual Cryptocurrency Detection**: EnigmaCracker now supports detection of both BTC and ETH wallets.
-- **AWS Integration**: I've developed a comprehensive guide to help you deploy EnigmaCracker on AWS (Amazon Web Services). This integration enables you to utilize cloud computing resources for better performance and scalability. The guide includes detailed instructions for setting up EnigmaCracker on Amazon EC2 (Elastic Compute Cloud) instances and using Amazon ECR (Elastic Container Registry) for efficient cloud-based operations.
+- **Performance enhancement**: DEnigmaCracker now supports detection of both BTC and ETH wallets and has better performance than the previous version.
+- **Can run multiple programs**: DEnigmaCracker supports you to run multiple shells at the same time. Makes finding a wallet more feasible.
+- **Available for macOS**: I have improved some details in the program to be suitable for the MacOs operating system. Of course it can still be used for Windows.
