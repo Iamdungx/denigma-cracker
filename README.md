@@ -54,7 +54,7 @@ Through the integration of BIP39 and BIP44 protocols, EnigmaCracker serves as a 
 Clone the repository using:
 
 ```bash
-git clone https://github.com/yaron4u/EnigmaCracker
+git clone https://github.com/Iamdungx/DEnigma-Cracker
 ```
 Remember to install the required libraries using:
 ```bash
@@ -65,16 +65,16 @@ pip install -r requirements.txt
 1. Obtain an Etherscan API key following the instructions [here](https://docs.etherscan.io/getting-started/viewing-api-usage-statistics).
 2. Navigate to the script's directory and insert your API key in EnigmaCracker.env:
 ```bash
-# In EnigmaCracker.env
-etherscan_api_key = your_api_key_here <--- Replace with your actual API key
+# In DEnigmaCracker.env
+ETHERSCAN_API_KEY=[your_api_key_here] <--- Replace with your actual API key
 ```
 ## Execution
 
-Run EnigmaCracker from the command line:
+Run DEnigmaCracker from the command line:
 
 ```bash
-cd path/to/EnigmaCracker
-python EnigmaCracker.py
+cd path/to/DEnigmaCracker
+python DEnigmaCracker.py
 ```
 ### Note
 - The Docker environment provides an isolated and consistent runtime for EnigmaCracker.
