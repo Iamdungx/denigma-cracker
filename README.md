@@ -1,5 +1,7 @@
 # DEnigmaCracker
 
+![DEnigma Review](https://github.com/Iamdungx/denigma-cracker/blob/dev/assets/img/review.gif)
+
 DEnigmaCracker is a tool for brute-forcing crypto wallets, sourced and developed from [yaron4u's EnigmaCracker](https://github.com/yaron4u/EnigmaCracker) by me.
 
 ## ⚠️ Disclaimer ⚠️
@@ -65,7 +67,7 @@ pip install -r requirements.txt
 1. Obtain an Etherscan API key following the instructions [here](https://docs.etherscan.io/getting-started/viewing-api-usage-statistics).
 2. Navigate to the script's directory and insert your API key in DEnigmaCracker.env:
 ```bash
-# In DEnigmaCracker.env
+# In assets/env/DEnigmaCracker.env
 ETHERSCAN_API_KEY=[your_api_key_here] <--- Replace with your actual API key
 ```
 ## Execution
