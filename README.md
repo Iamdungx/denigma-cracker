@@ -92,6 +92,8 @@ Setting up EnigmaCracker on an AWS EC2 instance with your Docker image in Amazon
 ---
 ## NEW Updates on Version 1.1
 
-- **Performance enhancement**: DEnigmaCracker now supports detection of both BTC and ETH wallets and has better performance than the previous version.
-- **Can run multiple programs**: DEnigmaCracker supports you to run multiple shells at the same time. Makes finding a wallet more feasible.
-- **Available for macOS**: I have improved some details in the program to be suitable for the MacOs operating system. Of course it can still be used for Windows.
+- **Handling Sensitive Information**: Ensure sensitive information, like the seed, is not logged unnecessarily to avoid security risks.
+
+- **API Rate Limits and Error Handling**: Consider implementing a more robust retry mechanism to handle rate limits and API errors.
+
+- **Modularize the Code**: Breaking down the script into smaller functions can improve readability and maintainability.
