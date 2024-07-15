@@ -1,6 +1,8 @@
 
 # DEnigmaCracker
 
+![DEnigma Review](https://github.com/Iamdungx/denigma-cracker/blob/dev/assets/img/review.gif)
+
 DEnigmaCracker is a tool for brute-forcing crypto wallets, sourced and developed from [yaron4u's EnigmaCracker](https://github.com/yaron4u/EnigmaCracker) by me.
 
 ## ⚠️ Disclaimer ⚠️
