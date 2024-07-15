@@ -66,7 +66,7 @@ pip install -r requirements.txt
 1. Obtain an Etherscan API key following the instructions [here](https://docs.etherscan.io/getting-started/viewing-api-usage-statistics).
 2. Navigate to the script's directory and insert your API key in DEnigmaCracker.env:
 ```bash
-# In DEnigmaCracker.env
+# In assets/env/DEnigmaCracker.env
 ETHERSCAN_API_KEY=[your_api_key_here] <--- Replace with your actual API key
 ```
 ## Execution
