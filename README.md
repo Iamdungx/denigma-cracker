@@ -1,6 +1,9 @@
+
 # DEnigmaCracker
-DEnigmaCracker is a tool for brute forcing Crypto Wallets sourced and developed from [yaron4u](https://github.com/yaron4u/EnigmaCracker) by me.
-## ⚠️**Disclaimer**⚠️
+
+DEnigmaCracker is a tool for brute-forcing crypto wallets, sourced and developed from [yaron4u's EnigmaCracker](https://github.com/yaron4u/EnigmaCracker) by me.
+
+## ⚠️ Disclaimer ⚠️
 
 This script is developed for educational and research purposes only.
 
@@ -44,7 +47,6 @@ The script leverages the `bip_utils` library to generate a 12-word BIP39 mnemoni
 3. **Balance Checking**: With the generated addresses, the script uses online blockchain explorers through their APIs (Etherscan for Ethereum and Blockchain.info for Bitcoin) to check if the generated wallets contain any balance.
     
 4. **Logging Results**: If a balance is found, the script writes the mnemonic, the derived addresses, and the wallet balances to a file (`wallets_with_balance.txt`), preserving the potentially valuable information for further examination.
-    
 
 Through the integration of BIP39 and BIP44 protocols, EnigmaCracker serves as a practical example of how the **Master Seed** forms the bedrock of cryptocurrency wallets, allowing for a secure, hierarchical structure of key derivation and management.
 
@@ -88,7 +90,7 @@ python DEnigmaCracker.py
 Setting up EnigmaCracker on an AWS EC2 instance with your Docker image in Amazon ECR offers improved scalability and reliability for your wallet scanning tasks. This approach provides a streamlined and effective solution to harness EnigmaCracker’s full potential on a powerful cloud platform.
 
 ---
-## NEW Updates on Version 1.0
+## NEW Updates on Version 1.1
 
 - **Performance enhancement**: DEnigmaCracker now supports detection of both BTC and ETH wallets and has better performance than the previous version.
 - **Can run multiple programs**: DEnigmaCracker supports you to run multiple shells at the same time. Makes finding a wallet more feasible.
