@@ -1,3 +1,4 @@
+![Uploading Screen Recording 2024-07-15 at 14.00.07.gif…]()
 
 # DEnigmaCracker
 
