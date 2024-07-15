@@ -1,5 +1,3 @@
-![Uploading Screen Recording 2024-07-15 at 14.00.07.gif…]()
-
 # DEnigmaCracker
 
 DEnigmaCracker is a tool for brute-forcing crypto wallets, sourced and developed from [yaron4u's EnigmaCracker](https://github.com/yaron4u/EnigmaCracker) by me.
