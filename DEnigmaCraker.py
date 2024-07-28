@@ -16,7 +16,7 @@ from bip_utils import (
 )
 
 # Constants
-ENV_FILE_NAME = "DEnigmaCracker.env"
+ENV_FILE_NAME = "assets/env/DEnigmaCracker.env"
 WALLETS_FILE_NAME = "wallets_with_balance.txt"
 
 # Global counter for the number of wallets scanned
