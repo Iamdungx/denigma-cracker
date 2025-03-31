@@ -16,7 +16,7 @@ from bip_utils import (
 )
 
 # Constants
-ENV_FILE_NAME = "DEnigmaCracker.env"
+ENV_FILE_NAME = "assets/env/DEnigmaCracker.env"
 WALLETS_FILE_NAME = "wallets_with_balance.txt"
 
 # Global counter for the number of wallets scanned
@@ -43,7 +43,7 @@ def get_log_file_path():
     if not os.path.exists(log_directory):
         os.makedirs(log_directory)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    return os.path.join(log_directory, f"enigmacracker_{timestamp}.log")
+    return os.path.join(log_directory, f"DEnigmaCracker_{timestamp}.log")
 
 # Configure logging
 log_file_path = get_log_file_path()
@@ -59,7 +59,7 @@ logging.basicConfig(
 def update_cmd_title():
     # Update the CMD title with the current number of wallets scanned
     if platform.system() == "Windows":
-        os.system(f"title EnigmaCracker.py - Wallets Scanned: {wallets_scanned}")
+        os.system(f"title DEnigmaCracker.py - Wallets Scanned: {wallets_scanned}")
 
 def generate_bip39_mnemonic():
     # Generate a 12-word BIP39 mnemonic
