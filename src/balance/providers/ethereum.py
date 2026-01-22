@@ -1,5 +1,5 @@
 """
-Ethereum balance provider using Etherscan API.
+Ethereum balance provider using Etherscan API V2.
 """
 
 import logging
@@ -14,17 +14,19 @@ logger = logging.getLogger(__name__)
 
 class EthereumProvider(BalanceProvider):
     """
-    Ethereum balance provider using Etherscan API.
+    Ethereum balance provider using Etherscan API V2.
     
-    API Documentation: https://docs.etherscan.io/api-endpoints/accounts
+    API Documentation: https://docs.etherscan.io/v2-migration
     """
     
     WEI_PER_ETH = 1e18
+    # Ethereum mainnet chain ID
+    CHAIN_ID = 1
     
     def __init__(
         self,
         api_key: str,
-        api_url: str = "https://api.etherscan.io/api",
+        api_url: str = "https://api.etherscan.io/v2/api",
         rate_limit: int = 5,
         timeout: int = 30,
         max_retries: int = 3,
@@ -49,8 +51,9 @@ class EthereumProvider(BalanceProvider):
         return "Etherscan"
     
     def _build_url(self, address: str) -> str:
-        """Build Etherscan API URL for balance check."""
+        """Build Etherscan API V2 URL for balance check."""
         params = [
+            f"chainid={self.CHAIN_ID}",
             f"module=account",
             f"action=balance",
             f"address={address}",
@@ -119,6 +122,7 @@ class EthereumProvider(BalanceProvider):
             Token balance (may need to adjust for decimals)
         """
         params = [
+            f"chainid={self.CHAIN_ID}",
             f"module=account",
             f"action=tokenbalance",
             f"contractaddress={contract_address}",

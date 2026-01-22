@@ -39,7 +39,7 @@ class EthereumConfig(ChainConfig):
     )
     
     api_key: str = Field(default="", alias="ETHERSCAN_API_KEY")
-    api_url: str = "https://api.etherscan.io/api"
+    api_url: str = "https://api.etherscan.io/v2/api"
     
     @field_validator("api_key", mode="before")
     @classmethod

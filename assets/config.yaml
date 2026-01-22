@@ -9,7 +9,7 @@ debug: false
 # Ethereum configuration
 ethereum:
   enabled: true
-  api_url: https://api.etherscan.io/api
+  api_url: https://api.etherscan.io/v2/api
   # API key should be set in .env file: ETHERSCAN_API_KEY=your_key
   rate_limit: 5  # requests per second
   timeout: 30    # seconds
