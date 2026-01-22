@@ -87,6 +87,14 @@ class BalanceChecker:
         Returns:
             Updated wallet info with balance
         """
+        # Skip wallets with empty address (failed generation)
+        if not wallet.address:
+            error_msg = wallet.error or "Wallet generation failed - empty address"
+            logger.debug(f"Skipping {wallet.chain} wallet: {error_msg}")
+            wallet.error = error_msg
+            wallet.balance_checked = True
+            return wallet
+        
         provider = self.get_provider(wallet.chain)
         
         if provider is None:

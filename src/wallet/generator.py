@@ -154,7 +154,8 @@ class WalletGenerator:
         )
         
         address = bip44_ctx.PublicKey().ToAddress()
-        path = f"m/44'/{coin.CoinIndex()}'/{account}'/0/{address_index}"
+        coin_index = bip44_ctx.CoinConf().CoinIndex()
+        path = f"m/44'/{coin_index}'/{account}'/0/{address_index}"
         
         return address, path
     
@@ -180,7 +181,8 @@ class WalletGenerator:
         )
         
         address = bip49_ctx.PublicKey().ToAddress()
-        path = f"m/49'/{coin.CoinIndex()}'/{account}'/0/{address_index}"
+        coin_index = bip49_ctx.CoinConf().CoinIndex()
+        path = f"m/49'/{coin_index}'/{account}'/0/{address_index}"
         
         return address, path
     
@@ -206,7 +208,8 @@ class WalletGenerator:
         )
         
         address = bip84_ctx.PublicKey().ToAddress()
-        path = f"m/84'/{coin.CoinIndex()}'/{account}'/0/{address_index}"
+        coin_index = bip84_ctx.CoinConf().CoinIndex()
+        path = f"m/84'/{coin_index}'/{account}'/0/{address_index}"
         
         return address, path
     

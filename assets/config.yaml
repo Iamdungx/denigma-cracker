@@ -11,7 +11,7 @@ ethereum:
   enabled: true
   api_url: https://api.etherscan.io/v2/api
   # API key should be set in .env file: ETHERSCAN_API_KEY=your_key
-  rate_limit: 5  # requests per second
+  rate_limit: 2  # requests per second (Etherscan free tier: 3/sec)
   timeout: 30    # seconds
   max_retries: 3
   retry_delay: 5

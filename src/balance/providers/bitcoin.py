@@ -61,8 +61,14 @@ class BitcoinProvider(BalanceProvider):
             }
         }
         """
+        # Check for API error response
+        if "error" in data:
+            raise BalanceProviderError(f"API error: {data['error']}")
+        
         if address not in data:
-            raise BalanceProviderError(f"Address {address} not found in response")
+            # Log available keys for debugging
+            logger.debug(f"Response keys: {list(data.keys())}, expected: {address}")
+            raise BalanceProviderError(f"Address {address[:10]}... not found in response")
         
         try:
             balance_satoshi = data[address]["final_balance"]

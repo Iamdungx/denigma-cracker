@@ -8,13 +8,20 @@ from pathlib import Path
 from typing import Optional
 from functools import lru_cache
 
+from dotenv import load_dotenv
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 import yaml
 
 
-# Base paths
+# Load .env file at module import time
 BASE_DIR = Path(__file__).resolve().parent.parent
+_env_file = BASE_DIR / ".env"
+if _env_file.exists():
+    load_dotenv(_env_file)
+
+
+# Base paths
 ASSETS_DIR = BASE_DIR / "assets"
 OUTPUT_DIR = BASE_DIR / "output"
 LOGS_DIR = BASE_DIR / "logs"
