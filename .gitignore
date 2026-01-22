@@ -80,3 +80,6 @@ results.json
 # Environment files
 .env
 !.env.example
+
+# Spec folder (local only)
+spec/
