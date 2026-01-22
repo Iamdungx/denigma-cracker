@@ -15,6 +15,7 @@ from tenacity import (
 )
 
 from src.wallet.models import Chain
+from src.utils.rate_limiter import RateLimiter
 
 
 logger = logging.getLogger(__name__)
@@ -60,6 +61,7 @@ class BalanceProvider(ABC):
         self.timeout = timeout
         self.max_retries = max_retries
         self._session: Optional[aiohttp.ClientSession] = None
+        self._rate_limiter = RateLimiter(rate=rate_limit, burst=1)
     
     @property
     @abstractmethod
@@ -117,7 +119,7 @@ class BalanceProvider(ABC):
     )
     async def _make_request(self, url: str) -> dict:
         """
-        Make an HTTP request with retry logic.
+        Make an HTTP request with retry logic and rate limiting.
         
         Args:
             url: URL to request
@@ -125,6 +127,9 @@ class BalanceProvider(ABC):
         Returns:
             JSON response as dictionary
         """
+        # Wait for rate limiter before making request
+        await self._rate_limiter.acquire()
+        
         session = await self.get_session()
         
         try:
