@@ -1,12 +1,39 @@
 # DEnigmaCracker v2.0-beta
 
+<div align="center">
+
 ![DEnigmaCracker Banner](assets/img/banner.png)
+
+[![Python Version](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/) [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE) [![Version](https://img.shields.io/badge/version-2.0.0--beta-orange.svg)](https://github.com/Iamdungx/DEnigma-Cracker/releases) [![Status](https://img.shields.io/badge/status-beta-yellow.svg)](https://github.com/Iamdungx/DEnigma-Cracker) [![Code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
+<!-- GitHub Statistics -->
+[![GitHub stars](https://img.shields.io/github/stars/Iamdungx/DEnigma-Cracker?style=social)](https://github.com/Iamdungx/DEnigma-Cracker/stargazers) [![GitHub forks](https://img.shields.io/github/forks/Iamdungx/DEnigma-Cracker?style=social)](https://github.com/Iamdungx/DEnigma-Cracker/network/members) [![GitHub issues](https://img.shields.io/github/issues/Iamdungx/DEnigma-Cracker)](https://github.com/Iamdungx/DEnigma-Cracker/issues) [![GitHub pull requests](https://img.shields.io/github/issues-pr/Iamdungx/DEnigma-Cracker)](https://github.com/Iamdungx/DEnigma-Cracker/pulls)
+
+**An educational and research-oriented Python tool for understanding cryptocurrency wallet systems**
+
+[Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [Contributing](#-contributing) • [Support](#-support)
+
+</div>
+
+---
 
 DEnigmaCracker is an educational and research-oriented Python tool that demonstrates the technical implementation of BIP-39 mnemonic generation, BIP-44 hierarchical deterministic (HD) wallet key derivation, and blockchain address generation for Bitcoin, Ethereum, and BNB Smart Chain networks.
 
 This project serves as a practical reference implementation for understanding how cryptocurrency wallet systems work at a technical level, including the relationship between seed phrases, master seeds, derivation paths, and blockchain addresses.
 
 **Original work**: This project is sourced and developed from [yaron4u's EnigmaCracker](https://github.com/yaron4u/EnigmaCracker) by [@Iamdungx](https://github.com/Iamdungx).
+
+## ✨ Features
+
+- 🔄 **Async & Concurrent**: Multi-worker support for parallel processing
+- 🔒 **Secure Logging**: Automatic seed phrase masking in logs
+- 📊 **Real-time Dashboard**: Live status updates with Rich terminal UI
+- 🔗 **Multi-chain Support**: Bitcoin, Ethereum, and BNB Smart Chain
+- ⚙️ **Configurable**: YAML config files and environment variables
+- 🎨 **Beautiful CLI**: Rich terminal interface with colors and progress tracking
+- 📝 **Type-safe**: Comprehensive type hints throughout
+- 🧪 **Tested**: Test suite with pytest
+- 📚 **Well Documented**: Professional documentation and examples
 
 ---
 
@@ -45,7 +72,28 @@ This software is provided **exclusively for educational and research purposes**.
 
 ---
 
-## How It Works
+## 📑 Table of Contents
+
+- [⚠️ Critical Disclaimer](#️-critical-disclaimer)
+- [✨ Features](#-features)
+- [🔧 How It Works](#-how-it-works)
+- [📊 Mathematical Infeasibility](#-mathematical-infeasibility)
+- [🚀 Installation](#-installation)
+- [⚙️ Configuration](#️-configuration)
+- [💻 Usage](#-usage)
+- [⚡ Performance Notes](#-performance-notes)
+- [🏗️ Technical Architecture](#️-technical-architecture)
+- [⚖️ Ethical and Legal Considerations](#️-ethical-and-legal-considerations)
+- [📝 Version 2.0-beta Details](#-version-20-beta-technical-details)
+- [📸 Screenshots](#-screenshots)
+- [🤝 Contributing](#-contributing)
+- [📄 License](#-license)
+- [🙏 Acknowledgments](#-acknowledgments)
+- [💬 Support](#-support)
+
+---
+
+## 🔧 How It Works
 
 DEnigmaCracker demonstrates the technical workflow of cryptocurrency wallet systems by implementing the following components:
 
@@ -87,7 +135,7 @@ The implementation uses asynchronous I/O (`asyncio`) with multiple worker thread
 
 ---
 
-## Mathematical Infeasibility
+## 📊 Mathematical Infeasibility
 
 **The probability of finding a funded wallet through random mnemonic generation is effectively zero.**
 
@@ -122,7 +170,7 @@ This tool demonstrates the **cryptographic strength** of BIP-39/BIP-44 systems. 
 
 ---
 
-## Installation
+## 🚀 Installation
 
 ### Prerequisites
 
@@ -152,7 +200,7 @@ This tool demonstrates the **cryptographic strength** of BIP-39/BIP-44 systems. 
 
 ---
 
-## Configuration
+## ⚙️ Configuration
 
 ### Environment Variables
 
@@ -184,7 +232,7 @@ You can also use a YAML configuration file for more detailed settings. See `asse
 
 ---
 
-## Usage
+## 💻 Usage
 
 ### Basic Usage
 
@@ -249,7 +297,7 @@ denigmacracker scan --debug
 
 ---
 
-## Performance Notes
+## ⚡ Performance Notes
 
 ### Generation Rate
 
@@ -279,7 +327,7 @@ The tool implements a token bucket rate limiting algorithm to ensure compliance 
 
 ---
 
-## Technical Architecture
+## 🏗️ Technical Architecture
 
 ### Project Structure
 
@@ -318,7 +366,7 @@ DEnigma-Cracker/
 
 ---
 
-## Ethical and Legal Considerations
+## ⚖️ Ethical and Legal Considerations
 
 ### Intended Use
 
@@ -350,7 +398,7 @@ If you discover any security vulnerabilities in this software, please report the
 
 ---
 
-## Version 2.0-beta Technical Details
+## 📝 Version 2.0-beta Technical Details
 
 ### Architecture Improvements
 
@@ -371,24 +419,49 @@ If you discover any security vulnerabilities in this software, please report the
 
 ---
 
-## Contributing
+## 🤝 Contributing
 
-Contributions are welcome for educational and research improvements. Please ensure that:
+Contributions are welcome for educational and research improvements! We appreciate your interest in making DEnigmaCracker better.
 
-- All contributions maintain the educational and research-oriented nature of the project
-- Code follows the existing style and architecture patterns
-- Documentation is updated to reflect changes
-- All tests pass before submitting pull requests
+### How to Contribute
+
+1. **Fork the repository**
+2. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
+3. **Make your changes** following the project's code style
+4. **Add tests** if applicable
+5. **Update documentation** as needed
+6. **Commit your changes** (`git commit -m 'Add some amazing feature'`)
+7. **Push to the branch** (`git push origin feature/amazing-feature`)
+8. **Open a Pull Request**
+
+### Contribution Guidelines
+
+- All contributions must maintain the educational and research-oriented nature of the project
+- Code should follow the existing style and architecture patterns
+- Documentation must be updated to reflect changes
+- All tests must pass before submitting pull requests
+- Please read [SECURITY.md](SECURITY.md) for security-related contributions
+
+### Contributors
+
+Thank you to all contributors who have helped improve DEnigmaCracker!
+
+<!-- Contributors list will be auto-generated by GitHub -->
+<a href="https://github.com/Iamdungx/DEnigma-Cracker/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=Iamdungx/DEnigma-Cracker" />
+</a>
+
+**Made with [contrib.rocks](https://contrib.rocks)**
 
 ---
 
-## License
+## 📄 License
 
-This project is licensed under the MIT License. See the LICENSE file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ---
 
-## Acknowledgments
+## 🙏 Acknowledgments
 
 - **Original project**: [yaron4u's EnigmaCracker](https://github.com/yaron4u/EnigmaCracker)
 - **BIP-39 Wordlist**: [Blockplate](https://www.blockplate.com/pages/bip-39-wordlist)
@@ -399,10 +472,43 @@ This project is licensed under the MIT License. See the LICENSE file for details
 
 ---
 
-## Support
+## 📸 Screenshots
 
-For technical questions, bug reports, or contributions, please visit the [GitHub Issues](https://github.com/Iamdungx/DEnigma-Cracker/issues) page.
+### Status Dashboard
+
+![Status Dashboard](assets/img/status_stat.png)
+
+*Real-time statistics dashboard showing scan progress and metrics*
 
 ---
 
+## 💬 Support
+
+For technical questions, bug reports, or contributions, please visit the [GitHub Issues](https://github.com/Iamdungx/DEnigma-Cracker/issues) page.
+
+### Get Help
+
+- 📖 **Documentation**: Check the [README](README.md) and [CHANGELOG](CHANGELOG.md)
+- 🐛 **Report Bugs**: [Open an issue](https://github.com/Iamdungx/DEnigma-Cracker/issues/new?template=bug_report.md)
+- 💡 **Request Features**: [Open an issue](https://github.com/Iamdungx/DEnigma-Cracker/issues/new?template=feature_request.md)
+- 🔒 **Security Issues**: See [SECURITY.md](SECURITY.md) for responsible disclosure
+
+---
+
+## 📊 Project Status
+
+![GitHub last commit](https://img.shields.io/github/last-commit/Iamdungx/DEnigma-Cracker) ![GitHub release](https://img.shields.io/github/release/Iamdungx/DEnigma-Cracker) ![GitHub repo size](https://img.shields.io/github/repo-size/Iamdungx/DEnigma-Cracker) ![GitHub language count](https://img.shields.io/github/languages/count/Iamdungx/DEnigma-Cracker) ![GitHub top language](https://img.shields.io/github/languages/top/Iamdungx/DEnigma-Cracker)
+
+---
+
+<div align="center">
+
+**⭐ Star this repo if you find it useful! ⭐**
+
 **Remember**: This tool is for **educational and research purposes only**. It demonstrates how cryptocurrency wallet systems work but cannot realistically find funded wallets due to the mathematical properties of cryptographic key spaces. Use responsibly and in compliance with all applicable laws and regulations.
+
+Made with ❤️ by [@Iamdungx](https://github.com/Iamdungx)
+
+[⬆ Back to Top](#denigmacracker-v20-beta)
+
+</div>
