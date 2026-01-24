@@ -3,7 +3,6 @@ Bitcoin balance provider using Blockchain.info API.
 """
 
 import logging
-from typing import Optional
 
 from .base import BalanceProvider, BalanceProviderError
 from src.wallet.models import Chain

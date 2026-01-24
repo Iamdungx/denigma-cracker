@@ -14,7 +14,6 @@ from rich.console import Console
 from rich.live import Live
 from rich.table import Table
 from rich.panel import Panel
-from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TaskProgressColumn
 from rich.layout import Layout
 from rich.text import Text
 
@@ -23,7 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src import __version__
 from src.config import load_config, AppConfig
-from src.wallet import WalletGenerator, Chain, DerivationPath, ScanResult
+from src.wallet import WalletGenerator, Chain, DerivationPath
 from src.balance import BalanceChecker
 from src.utils import setup_logging, get_logger, OutputManager
 

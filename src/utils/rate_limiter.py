@@ -6,7 +6,6 @@ Implements token bucket algorithm for smooth rate limiting.
 import asyncio
 import time
 import logging
-from typing import Optional
 from dataclasses import dataclass, field
 
 

@@ -3,7 +3,6 @@ Ethereum balance provider using Etherscan API V2.
 """
 
 import logging
-from typing import Optional
 
 from .base import BalanceProvider, BalanceProviderError
 from src.wallet.models import Chain

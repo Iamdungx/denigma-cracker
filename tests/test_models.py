@@ -2,8 +2,6 @@
 Tests for data models.
 """
 
-import pytest
-from datetime import datetime
 from src.wallet.models import WalletInfo, ScanResult, ScanStatistics, Chain
 
 

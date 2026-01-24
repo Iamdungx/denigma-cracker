@@ -6,7 +6,6 @@ Handles file output, progress saving, and notifications.
 import json
 import logging
 from datetime import datetime
-from pathlib import Path
 from typing import Optional
 
 from src.wallet.models import ScanResult, ScanStatistics

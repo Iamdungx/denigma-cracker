@@ -6,7 +6,6 @@ Provides structured logging with optional seed masking.
 import logging
 import sys
 from datetime import datetime
-from pathlib import Path
 from typing import Optional
 
 from src.config import AppConfig, LOGS_DIR
