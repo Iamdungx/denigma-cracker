@@ -5,7 +5,7 @@ A cryptocurrency wallet scanner for educational purposes.
 
 import asyncio
 import signal
-import sys
+import time
 from pathlib import Path
 from typing import Optional
 
@@ -16,9 +16,6 @@ from rich.table import Table
 from rich.panel import Panel
 from rich.layout import Layout
 from rich.text import Text
-
-# Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src import __version__
 from src.config import load_config, AppConfig
@@ -36,14 +33,13 @@ app = typer.Typer(
 console = Console()
 logger = get_logger(__name__)
 
-# Global flag for graceful shutdown
-shutdown_requested = False
+# Thread-safe event for graceful shutdown
+shutdown_event = asyncio.Event()
 
 
 def signal_handler(signum, frame):
     """Handle shutdown signals gracefully."""
-    global shutdown_requested
-    shutdown_requested = True
+    shutdown_event.set()
     console.print("\n[yellow]Shutdown requested. Finishing current scan...[/yellow]")
 
 
@@ -83,7 +79,7 @@ async def run_scanner(
     derivations: list[DerivationPath],
 ) -> None:
     """
-    Run the main scanning loop.
+    Run the main scanning loop with concurrent workers.
     
     Args:
         config: Application configuration
@@ -91,41 +87,42 @@ async def run_scanner(
         chains: Blockchain chains to scan
         derivations: Derivation paths to use
     """
-    global shutdown_requested
-    
     # Initialize components
-    generator = WalletGenerator(words_num=12)
     output_manager = OutputManager(config)
     
-    async with BalanceChecker(config) as checker:
-        stats = {
-            "scanned": 0,
-            "found": 0,
-            "errors": 0,
-            "rate": 0.0,
-            "elapsed": 0.0,
-        }
+    # Shared statistics with lock for thread-safe updates
+    stats = {
+        "scanned": 0,
+        "found": 0,
+        "errors": 0,
+        "rate": 0.0,
+        "elapsed": 0.0,
+    }
+    stats_lock = asyncio.Lock()
+    
+    start_time = time.time()
+    
+    async def worker_loop(worker_id: int, checker: BalanceChecker) -> None:
+        """Worker loop that runs scanning tasks concurrently."""
+        worker_generator = WalletGenerator(words_num=12)
         
-        import time
-        start_time = time.time()
-        
-        with Live(console=console, refresh_per_second=4) as live:
-            while not shutdown_requested:
-                try:
-                    # Generate mnemonic
-                    mnemonic = generator.generate_mnemonic()
-                    
-                    # Derive wallets for all enabled chains
-                    wallets = generator.derive_all_wallets(
-                        mnemonic=mnemonic,
-                        chains=chains,
-                        derivations=derivations,
-                    )
-                    
-                    # Check balances
-                    result = await checker.scan_seed(mnemonic, wallets)
-                    
-                    # Update statistics
+        while not shutdown_event.is_set():
+            try:
+                # Generate mnemonic
+                mnemonic = worker_generator.generate_mnemonic()
+                
+                # Derive wallets for all enabled chains
+                wallets = worker_generator.derive_all_wallets(
+                    mnemonic=mnemonic,
+                    chains=chains,
+                    derivations=derivations,
+                )
+                
+                # Check balances
+                result = await checker.scan_seed(mnemonic, wallets)
+                
+                # Update statistics atomically
+                async with stats_lock:
                     stats["scanned"] += 1
                     stats["elapsed"] = time.time() - start_time
                     stats["rate"] = stats["scanned"] / max(stats["elapsed"], 1)
@@ -141,26 +138,53 @@ async def run_scanner(
                     # Count errors
                     stats["errors"] += sum(1 for w in result.wallets if w.error)
                     
-                    # Update live display
-                    layout = Layout()
-                    layout.split_column(
-                        Layout(Panel(
-                            Text("DEnigmaCracker v2.0", justify="center", style="bold cyan"),
-                            title="Running",
-                            border_style="cyan"
-                        ), size=3),
-                        Layout(create_status_table(stats)),
-                    )
-                    live.update(layout)
-                    
                     # Save progress periodically
                     if stats["scanned"] % 100 == 0:
                         output_manager.save_progress(stats["scanned"], stats["found"])
-                    
-                except Exception as e:
-                    logger.error(f"Error in scan loop: {e}")
+                
+            except Exception as e:
+                logger.error(f"Error in worker {worker_id} scan loop: {e}")
+                async with stats_lock:
                     stats["errors"] += 1
-                    await asyncio.sleep(1)
+                await asyncio.sleep(1)
+    
+    async with BalanceChecker(config) as checker:
+        # Create worker tasks
+        worker_tasks = [
+            asyncio.create_task(worker_loop(worker_id, checker))
+            for worker_id in range(workers)
+        ]
+        
+        # Update display in a separate task
+        async def update_display(live: Live):
+            """Update the live display periodically."""
+            while not shutdown_event.is_set():
+                layout = Layout()
+                layout.split_column(
+                    Layout(Panel(
+                        Text("DEnigmaCracker v2.0", justify="center", style="bold cyan"),
+                        title="Running",
+                        border_style="cyan"
+                    ), size=3),
+                    Layout(create_status_table(stats)),
+                )
+                live.update(layout)
+                await asyncio.sleep(0.25)  # Update every 250ms
+        
+        # Run display updates and workers concurrently
+        with Live(console=console, refresh_per_second=4) as live:
+            display_task = asyncio.create_task(update_display(live))
+            
+            try:
+                # Wait for all workers to complete (they run until shutdown_event is set)
+                await asyncio.gather(*worker_tasks, return_exceptions=True)
+            finally:
+                # Cancel display task
+                display_task.cancel()
+                try:
+                    await display_task
+                except asyncio.CancelledError:
+                    pass
         
         # Final summary
         output_manager.stats.total_scanned = stats["scanned"]
@@ -216,18 +240,18 @@ def scan(
     
     # Print banner
     banner = """
-╔═══════════════════════════════════════════════════════════════╗
-║                                                               ║
-║     ██████╗ ███████╗███╗   ██╗██╗ ██████╗ ███╗   ███╗ █████╗  ║
-║     ██╔══██╗██╔════╝████╗  ██║██║██╔════╝ ████╗ ████║██╔══██╗ ║
-║     ██║  ██║█████╗  ██╔██╗ ██║██║██║  ███╗██╔████╔██║███████║ ║
-║     ██║  ██║██╔══╝  ██║╚██╗██║██║██║   ██║██║╚██╔╝██║██╔══██║ ║
-║     ██████╔╝███████╗██║ ╚████║██║╚██████╔╝██║ ╚═╝ ██║██║  ██║ ║
-║     ╚═════╝ ╚══════╝╚═╝  ╚═══╝╚═╝ ╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═╝ ║
-║                                                               ║
-║                    CRACKER v2.0                               ║
-║           Educational Purpose Only - Use Responsibly          ║
-╚═══════════════════════════════════════════════════════════════╝
+?????????????????????????????????????????????????????????????????
+?                                                               ?
+?     ??????? ????????????   ?????? ??????? ????   ???? ??????  ?
+?     ?????????????????????  ?????????????? ????? ????????????? ?
+?     ???  ?????????  ?????? ?????????  ??????????????????????? ?
+?     ???  ?????????  ????????????????   ?????????????????????? ?
+?     ??????????????????? ????????????????????? ??? ??????  ??? ?
+?     ??????? ???????????  ???????? ??????? ???     ??????  ??? ?
+?                                                               ?
+?                    CRACKER v2.0                               ?
+?           Educational Purpose Only - Use Responsibly          ?
+?????????????????????????????????????????????????????????????????
 """
     console.print(banner, style="cyan")
     
@@ -324,7 +348,7 @@ def config(
     
     if init:
         console.print("[yellow]Creating default configuration...[/yellow]")
-        console.print("Edit assets/env/DEnigmaCracker.env to add your API keys")
+        console.print("Edit .env to add your API keys (see .env.example for template)")
         console.print("Optionally create assets/config.yaml for advanced configuration")
 
 

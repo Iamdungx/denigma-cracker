@@ -47,7 +47,7 @@ class BitcoinProvider(BalanceProvider):
         """Build Blockchain.info API URL for balance check."""
         return f"{self.api_url}/balance?active={address}"
     
-    def _parse_response(self, data: dict, address: str) -> float:
+    def _parse_response(self, data: dict) -> float:
         """
         Parse Blockchain.info API response.
         
@@ -59,10 +59,18 @@ class BitcoinProvider(BalanceProvider):
                 "total_received": total_received_satoshi
             }
         }
+        
+        Note: The address is included in the data dict under the "_address" key
+        to maintain compatibility with the base class interface.
         """
         # Check for API error response
         if "error" in data:
             raise BalanceProviderError(f"API error: {data['error']}")
+        
+        # Extract address from data (added by get_balance before calling this method)
+        address = data.get("_address")
+        if not address:
+            raise BalanceProviderError("Address not found in response data")
         
         if address not in data:
             # Log available keys for debugging
@@ -87,7 +95,9 @@ class BitcoinProvider(BalanceProvider):
         """
         url = self._build_url(address)
         data = await self._make_request(url)
-        return self._parse_response(data, address)
+        # Include address in data dict to maintain interface compatibility
+        data["_address"] = address
+        return self._parse_response(data)
     
     async def get_multi_balance(self, addresses: list[str]) -> dict[str, float]:
         """

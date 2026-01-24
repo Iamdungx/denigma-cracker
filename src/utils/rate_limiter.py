@@ -27,6 +27,17 @@ class RateLimiter:
     _lock: asyncio.Lock = field(init=False, default_factory=asyncio.Lock)
     
     def __post_init__(self):
+        """Initialize rate limiter with validation."""
+        if self.rate <= 0:
+            raise ValueError(
+                f"Rate must be greater than 0, got {self.rate}. "
+                f"Rate represents requests per second and must be positive."
+            )
+        if self.burst < 1:
+            raise ValueError(
+                f"Burst must be at least 1, got {self.burst}. "
+                f"Burst represents the maximum number of tokens available."
+            )
         self._tokens = float(self.burst)
         self._last_update = time.monotonic()
     
@@ -79,14 +90,42 @@ class MultiRateLimiter:
         
         Args:
             name: Identifier for the rate limiter
-            rate: Requests per second
-            burst: Max burst size
+            rate: Requests per second (must be > 0)
+            burst: Max burst size (must be >= 1)
             
         Returns:
             RateLimiter instance
+            
+        Raises:
+            ValueError: If rate <= 0, burst < 1, or if a limiter with the same name 
+                       exists but with different parameters
         """
-        if name not in self._limiters:
-            self._limiters[name] = RateLimiter(rate=rate, burst=burst)
+        # Validate parameters before creating or checking existing limiter
+        if rate <= 0:
+            raise ValueError(
+                f"Rate must be greater than 0, got {rate}. "
+                f"Rate represents requests per second and must be positive."
+            )
+        if burst < 1:
+            raise ValueError(
+                f"Burst must be at least 1, got {burst}. "
+                f"Burst represents the maximum number of tokens available."
+            )
+        
+        if name in self._limiters:
+            existing = self._limiters[name]
+            # Check if parameters match
+            if existing.rate != rate or existing.burst != burst:
+                raise ValueError(
+                    f"Rate limiter '{name}' already exists with different parameters. "
+                    f"Existing: rate={existing.rate}, burst={existing.burst}. "
+                    f"Requested: rate={rate}, burst={burst}. "
+                    f"Use a different name or ensure consistent parameters."
+                )
+            return existing
+        
+        # Create new limiter
+        self._limiters[name] = RateLimiter(rate=rate, burst=burst)
         return self._limiters[name]
     
     async def acquire(self, name: str) -> None:

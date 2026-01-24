@@ -89,6 +89,8 @@ class BalanceChecker:
         """
         # Skip wallets with empty address (failed generation)
         if not wallet.address:
+            # Preserve original error from wallet generation if available,
+            # otherwise use a default message
             error_msg = wallet.error or "Wallet generation failed - empty address"
             logger.debug(f"Skipping {wallet.chain} wallet: {error_msg}")
             wallet.error = error_msg

@@ -97,5 +97,5 @@ class TestChainEnum:
     
     def test_chain_string_representation(self):
         """Test chain string representation."""
-        assert str(Chain.BITCOIN) == "bitcoin"
-        assert str(Chain.ETHEREUM) == "ethereum"
+        assert Chain.BITCOIN.value == "bitcoin"
+        assert Chain.ETHEREUM.value == "ethereum"

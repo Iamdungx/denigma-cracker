@@ -3,6 +3,7 @@ Logging configuration and utilities.
 Provides structured logging with optional seed masking.
 """
 
+import copy
 import logging
 import sys
 from datetime import datetime
@@ -11,10 +12,63 @@ from typing import Optional
 from src.config import AppConfig, LOGS_DIR
 
 
+# Valid BIP39 seed phrase lengths
+VALID_SEED_LENGTHS = {12, 15, 18, 21, 24}
+
+
+class MaskedValue:
+    """
+    Wrapper class for values that should be masked in logs.
+    Use this to explicitly mark sensitive values like seed phrases.
+    
+    Example:
+        logger.info(f"Generated seed: {MaskedValue(seed)}")
+    """
+    
+    def __init__(self, value: str):
+        """
+        Initialize masked value.
+        
+        Args:
+            value: The sensitive value to mask
+        """
+        self.value = value
+    
+    def __str__(self) -> str:
+        """Return masked representation."""
+        return self._mask_seed_phrase(self.value)
+    
+    def __repr__(self) -> str:
+        """Return masked representation."""
+        return f"MaskedValue('{self.__str__()}')"
+    
+    @staticmethod
+    def _mask_seed_phrase(seed: str) -> str:
+        """
+        Mask a seed phrase, showing only first 2 and last 2 words.
+        
+        Args:
+            seed: Seed phrase string
+            
+        Returns:
+            Masked seed phrase
+        """
+        words = seed.split()
+        if len(words) <= 4:
+            return seed  # Too short to mask meaningfully
+        
+        # Show first 2 and last 2 words, mask the rest
+        masked = words[:2] + ["****"] * (len(words) - 4) + words[-2:]
+        return " ".join(masked)
+
+
 class SeedMaskingFilter(logging.Filter):
     """
     Logging filter that masks seed phrases for security.
     Only shows first 2 and last 2 words of seed phrases.
+    
+    Supports explicit masking via MaskedValue wrapper and heuristic
+    detection for BIP39 seed phrases (12, 15, 18, 21, or 24 words).
     """
     
     def __init__(self, enabled: bool = True):
@@ -23,23 +77,50 @@ class SeedMaskingFilter(logging.Filter):
     
     def filter(self, record: logging.LogRecord) -> bool:
         if self.enabled and hasattr(record, 'msg'):
-            record.msg = self._mask_seed(str(record.msg))
+            # Handle MaskedValue instances explicitly
+            if isinstance(record.msg, MaskedValue):
+                record.msg = str(record.msg)
+            else:
+                record.msg = self._mask_seed(str(record.msg))
         return True
     
     def _mask_seed(self, message: str) -> str:
-        """Attempt to mask seed phrases in the message."""
-        # Simple heuristic: look for sequences of 12+ words
+        """
+        Attempt to mask seed phrases in the message.
+        
+        Uses conservative heuristics:
+        - Requires "seed" keyword in message (case-insensitive)
+        - Only checks for valid BIP39 lengths (12, 15, 18, 21, 24 words)
+        - All words must be lowercase alphabetic
+        - More specific matching to reduce false positives
+        
+        Args:
+            message: Log message to process
+            
+        Returns:
+            Message with seed phrases masked if detected
+        """
+        # Only process if message contains "seed" keyword
+        if "seed" not in message.lower():
+            return message
+        
         words = message.split()
         
-        # Check if this looks like a seed phrase log
-        if "seed" in message.lower() and len(words) >= 12:
-            # Try to identify and mask the seed portion
-            for i in range(len(words) - 11):
-                potential_seed = words[i:i+12]
-                # If all words are lowercase and alphabetic, likely a seed
-                if all(w.isalpha() and w.islower() for w in potential_seed):
-                    masked = potential_seed[:2] + ["****"] * 8 + potential_seed[-2:]
-                    words[i:i+12] = masked
+        # Check for each valid seed length
+        for seed_length in sorted(VALID_SEED_LENGTHS, reverse=True):
+            if len(words) < seed_length:
+                continue
+            
+            # Try to find a sequence of the exact seed length
+            for i in range(len(words) - seed_length + 1):
+                potential_seed = words[i:i+seed_length]
+                
+                # Check if all words are lowercase alphabetic (BIP39 words are lowercase)
+                if all(w.isalpha() and w.islower() and len(w) >= 3 for w in potential_seed):
+                    # Mask the seed phrase
+                    masked = potential_seed[:2] + ["****"] * (seed_length - 4) + potential_seed[-2:]
+                    words[i:i+seed_length] = masked
+                    # Only mask the first match to avoid over-masking
                     break
         
         return " ".join(words)
@@ -64,7 +145,15 @@ class ColoredFormatter(logging.Formatter):
         self.use_colors = use_colors
     
     def format(self, record: logging.LogRecord) -> str:
+        """
+        Format log record with colors, without mutating the original record.
+        
+        Creates a copy of the record to avoid side effects on other handlers.
+        """
         if self.use_colors and record.levelname in self.COLORS:
+            # Create a copy to avoid mutating the original record
+            # This prevents side effects on other handlers processing the same record
+            record = copy.copy(record)
             record.levelname = (
                 f"{self.COLORS[record.levelname]}{record.levelname}{self.RESET}"
             )

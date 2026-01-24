@@ -158,16 +158,40 @@ class OutputManager:
         """Print scanning summary to console."""
         stats = self.stats
         
+        # Format numbers with commas for readability
+        scanned_str = f"{stats.total_scanned:,}"
+        found_str = f"{stats.wallets_found:,}"
+        errors_str = f"{stats.errors:,}"
+        duration_str = f"{stats.elapsed_seconds:.1f}s"
+        rate_str = f"{stats.scan_rate:.2f}/s"
+        
+        # Calculate dynamic width based on actual values to ensure proper alignment
+        # Use a minimum width of 15 to handle large numbers gracefully
+        value_width = max(
+            15,
+            len(scanned_str),
+            len(found_str),
+            len(errors_str),
+            len(duration_str),
+            len(rate_str),
+        )
+        
+        # Label width (longest label is "Total Scanned:" = 14 chars)
+        label_width = 14
+        
+        # Calculate table width: "║  " (3) + label + ": " (2) + value + " ║" (2)
+        table_width = 3 + label_width + 2 + value_width + 2
+        
         summary = f"""
-╔══════════════════════════════════════════════════════════╗
-║                    SCAN SUMMARY                          ║
-╠══════════════════════════════════════════════════════════╣
-║  Total Scanned: {stats.total_scanned:>10}                ║
-║  Wallets Found: {stats.wallets_found:>10}                ║
-║  Errors:        {stats.errors:>10}                       ║
-║  Duration:      {stats.elapsed_seconds:>10.1f}s          ║
-║  Rate:          {stats.scan_rate:>10.2f}/s               ║
-╚══════════════════════════════════════════════════════════╝
+╔{'═' * (table_width - 2)}╗
+║{'SCAN SUMMARY':^{table_width - 2}}║
+╠{'═' * (table_width - 2)}╣
+║  {'Total Scanned:':<{label_width}} {scanned_str:>{value_width}} ║
+║  {'Wallets Found:':<{label_width}} {found_str:>{value_width}} ║
+║  {'Errors:':<{label_width}} {errors_str:>{value_width}} ║
+║  {'Duration:':<{label_width}} {duration_str:>{value_width}} ║
+║  {'Rate:':<{label_width}} {rate_str:>{value_width}} ║
+╚{'═' * (table_width - 2)}╝
 """
         print(summary)
         logger.info(f"Scan complete. Scanned: {stats.total_scanned}, Found: {stats.wallets_found}")

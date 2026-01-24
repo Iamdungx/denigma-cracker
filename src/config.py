@@ -8,17 +8,13 @@ from pathlib import Path
 from typing import Optional
 from functools import lru_cache
 
-from dotenv import load_dotenv
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 import yaml
 
 
-# Load .env file at module import time
+# Base directory for configuration files
 BASE_DIR = Path(__file__).resolve().parent.parent
-_env_file = BASE_DIR / ".env"
-if _env_file.exists():
-    load_dotenv(_env_file)
 
 
 # Base paths
@@ -41,6 +37,8 @@ class EthereumConfig(ChainConfig):
     """Ethereum-specific configuration."""
     
     model_config = SettingsConfigDict(
+        env_file=str(BASE_DIR / ".env"),
+        env_file_encoding="utf-8",
         env_prefix="ETH_",
         extra="ignore"
     )
@@ -50,8 +48,8 @@ class EthereumConfig(ChainConfig):
     
     @field_validator("api_key", mode="before")
     @classmethod
-    def get_api_key(cls, v: str) -> str:
-        """Try to get API key from environment if not set."""
+    def validate_etherscan_api_key(cls, v: str) -> str:
+        """Validate and load Etherscan API key from environment if not set."""
         return v or os.getenv("ETHERSCAN_API_KEY", "")
 
 
@@ -59,6 +57,8 @@ class BitcoinConfig(ChainConfig):
     """Bitcoin-specific configuration."""
     
     model_config = SettingsConfigDict(
+        env_file=str(BASE_DIR / ".env"),
+        env_file_encoding="utf-8",
         env_prefix="BTC_",
         extra="ignore"
     )
@@ -70,6 +70,8 @@ class BNBConfig(ChainConfig):
     """BNB Smart Chain configuration."""
     
     model_config = SettingsConfigDict(
+        env_file=str(BASE_DIR / ".env"),
+        env_file_encoding="utf-8",
         env_prefix="BNB_",
         extra="ignore"
     )
@@ -77,12 +79,20 @@ class BNBConfig(ChainConfig):
     api_key: str = Field(default="", alias="BSCSCAN_API_KEY")
     api_url: str = "https://api.bscscan.com/api"
     enabled: bool = False  # Disabled by default
+    
+    @field_validator("api_key", mode="before")
+    @classmethod
+    def validate_bscscan_api_key(cls, v: str) -> str:
+        """Validate and load BscScan API key from environment if not set."""
+        return v or os.getenv("BSCSCAN_API_KEY", "")
 
 
 class LoggingConfig(BaseSettings):
     """Logging configuration."""
     
     model_config = SettingsConfigDict(
+        env_file=str(BASE_DIR / ".env"),
+        env_file_encoding="utf-8",
         env_prefix="LOG_",
         extra="ignore"
     )
@@ -98,6 +108,8 @@ class ScannerConfig(BaseSettings):
     """Scanner-specific configuration."""
     
     model_config = SettingsConfigDict(
+        env_file=str(BASE_DIR / ".env"),
+        env_file_encoding="utf-8",
         env_prefix="SCANNER_",
         extra="ignore"
     )
@@ -112,6 +124,8 @@ class NotificationConfig(BaseSettings):
     """Notification configuration for alerts."""
     
     model_config = SettingsConfigDict(
+        env_file=str(BASE_DIR / ".env"),
+        env_file_encoding="utf-8",
         env_prefix="NOTIFY_",
         extra="ignore"
     )
