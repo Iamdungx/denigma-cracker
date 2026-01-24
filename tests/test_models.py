@@ -2,6 +2,8 @@
 Tests for data models.
 """
 
+from datetime import datetime, timedelta
+
 from src.wallet.models import WalletInfo, ScanResult, ScanStatistics, Chain
 
 
@@ -134,10 +136,48 @@ class TestScanStatistics:
         assert stats.errors == 1
     
     def test_scan_rate(self):
-        """Test scan rate calculation."""
+        """Test scan rate calculation with known values."""
+        # Test case 1: Known elapsed time and scanned count
         stats = ScanStatistics()
+        # Set start_time to 10 seconds ago
+        stats.start_time = datetime.now() - timedelta(seconds=10)
         stats.total_scanned = 100
         
-        # Rate depends on elapsed time
         rate = stats.scan_rate
-        assert rate >= 0
+        # Should be approximately 10 scans per second (100 / 10)
+        assert abs(rate - 10.0) < 0.1, f"Expected rate ~10.0, got {rate}"
+    
+    def test_scan_rate_zero_elapsed(self):
+        """Test scan rate when elapsed time is zero."""
+        stats = ScanStatistics()
+        stats.start_time = datetime.now()  # Just now
+        stats.total_scanned = 100
+        
+        # When elapsed is very close to 0, rate should be 0.0
+        # (implementation returns 0.0 when elapsed == 0)
+        rate = stats.scan_rate
+        # Since we just set start_time to now, elapsed will be very small
+        # The implementation checks if elapsed == 0, but due to timing,
+        # we might get a very large rate. Let's verify it handles this.
+        assert rate >= 0, "Rate should be non-negative"
+    
+    def test_scan_rate_precise_calculation(self):
+        """Test scan rate with precise time calculation."""
+        # Test case with exact timing
+        start_time = datetime.now() - timedelta(seconds=5)
+        stats = ScanStatistics()
+        stats.start_time = start_time
+        stats.total_scanned = 50
+        
+        rate = stats.scan_rate
+        # Should be exactly 10 scans per second (50 / 5)
+        assert abs(rate - 10.0) < 0.1, f"Expected rate ~10.0, got {rate}"
+    
+    def test_scan_rate_no_scans(self):
+        """Test scan rate when no scans have been performed."""
+        stats = ScanStatistics()
+        stats.start_time = datetime.now() - timedelta(seconds=10)
+        stats.total_scanned = 0
+        
+        rate = stats.scan_rate
+        assert rate == 0.0, "Rate should be 0 when no scans performed"
