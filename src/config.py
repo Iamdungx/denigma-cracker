@@ -147,7 +147,7 @@ class AppConfig(BaseSettings):
     
     # App metadata
     app_name: str = "DEnigmaCracker"
-    version: str = "2.0.0"
+    version: str = "2.0.0-beta"
     debug: bool = False
     
     # Paths

@@ -1,4 +1,4 @@
-# DEnigmaCracker v2.0 Dependencies
+# DEnigmaCracker v2.0-beta Dependencies
 
 # Core
 bip-utils>=2.9.0

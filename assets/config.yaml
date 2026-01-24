@@ -1,9 +1,9 @@
-# DEnigmaCracker v2.0 Configuration
+# DEnigmaCracker v2.0-beta Configuration
 # Copy this file and customize as needed
 
 # Application settings
 app_name: DEnigmaCracker
-version: "2.0.0"
+version: "2.0.0-beta"
 debug: false
 
 # Ethereum configuration

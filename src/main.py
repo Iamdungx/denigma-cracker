@@ -1,5 +1,5 @@
 """
-DEnigmaCracker v2.0 - Main entry point.
+DEnigmaCracker v2.0-beta - Main entry point.
 A cryptocurrency wallet scanner for educational purposes.
 """
 
@@ -182,7 +182,7 @@ async def run_scanner(
                 layout = Layout()
                 layout.split_column(
                     Layout(Panel(
-                        Text("DEnigmaCracker v2.0", justify="center", style="bold cyan"),
+                        Text("DEnigmaCracker v2.0-beta", justify="center", style="bold cyan"),
                         title="Running",
                         border_style="cyan"
                     ), size=3),
@@ -280,7 +280,7 @@ def scan(
     banner_content_width = 63
     
     # Version line - centered with colored border
-    version_str = "CRACKER v2.0"
+    version_str = "CRACKER v2.0-beta"
     version_padding = (banner_content_width - len(version_str)) // 2
     version_line = f"[bright_cyan]║[/bright_cyan]{' ' * version_padding}[bold bright_cyan]{version_str}[/bold bright_cyan]{' ' * (banner_content_width - len(version_str) - version_padding)}[bright_cyan]║[/bright_cyan]"
     console.print(version_line)
