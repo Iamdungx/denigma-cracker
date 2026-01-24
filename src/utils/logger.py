@@ -216,7 +216,7 @@ def setup_logging(
         logs_dir.mkdir(parents=True, exist_ok=True)
         
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        log_file_path = logs_dir / f"denigmacracker_{timestamp}.log"
+        log_file_path = logs_dir / f"DEnigmaCracker_{timestamp}.log"
         
         file_handler = logging.FileHandler(log_file_path, encoding="utf-8")
         file_handler.setLevel(getattr(logging, log_level.upper()))

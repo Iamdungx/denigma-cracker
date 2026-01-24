@@ -56,6 +56,21 @@ def create_status_table(stats: dict) -> Table:
     table.add_row("Rate", f"{stats.get('rate', 0):.2f}/s")
     table.add_row("Elapsed", f"{stats.get('elapsed', 0):.0f}s")
     
+    # Add separator row
+    table.add_row("", "")
+    
+    # Add quit instruction
+    table.add_row(
+        "[dim]Quit[/dim]",
+        "[yellow]Press Ctrl+C[/yellow]"
+    )
+    
+    # Add author info
+    table.add_row(
+        "[dim]Author[/dim]",
+        "[link=https://github.com/Iamdungx][bold bright_blue]@Iamdungx[/bold bright_blue][/link]"
+    )
+    
     return table
 
 
@@ -159,6 +174,11 @@ async def run_scanner(
         async def update_display(live: Live):
             """Update the live display periodically."""
             while not shutdown_event.is_set():
+                # Acquire lock to safely read stats (prevents race conditions)
+                async with stats_lock:
+                    # Create a copy of stats to avoid holding lock during display update
+                    current_stats = stats.copy()
+                
                 layout = Layout()
                 layout.split_column(
                     Layout(Panel(
@@ -166,7 +186,7 @@ async def run_scanner(
                         title="Running",
                         border_style="cyan"
                     ), size=3),
-                    Layout(create_status_table(stats)),
+                    Layout(create_status_table(current_stats)),
                 )
                 live.update(layout)
                 await asyncio.sleep(0.25)  # Update every 250ms
@@ -186,10 +206,11 @@ async def run_scanner(
                 except asyncio.CancelledError:
                     pass
         
-        # Final summary
-        output_manager.stats.total_scanned = stats["scanned"]
-        output_manager.stats.wallets_found = stats["found"]
-        output_manager.stats.errors = stats["errors"]
+        # Final summary - acquire lock to safely read final stats
+        async with stats_lock:
+            output_manager.stats.total_scanned = stats["scanned"]
+            output_manager.stats.wallets_found = stats["found"]
+            output_manager.stats.errors = stats["errors"]
         output_manager.print_summary()
 
 
@@ -238,22 +259,46 @@ def scan(
     # Setup logging
     setup_logging(config)
     
-    # Print banner
-    banner = """
-?????????????????????????????????????????????????????????????????
-?                                                               ?
-?     ??????? ????????????   ?????? ??????? ????   ???? ??????  ?
-?     ?????????????????????  ?????????????? ????? ????????????? ?
-?     ???  ?????????  ?????? ?????????  ??????????????????????? ?
-?     ???  ?????????  ????????????????   ?????????????????????? ?
-?     ??????????????????? ????????????????????? ??? ??????  ??? ?
-?     ??????? ???????????  ???????? ??????? ???     ??????  ??? ?
-?                                                               ?
-?                    CRACKER v2.0                               ?
-?           Educational Purpose Only - Use Responsibly          ?
-?????????????????????????????????????????????????????????????????
-"""
-    console.print(banner, style="cyan")
+    # Print colorful banner with gradient effect
+    banner_lines = [
+        ("╔═══════════════════════════════════════════════════════════════╗", "bright_cyan"),
+        ("║                                                               ║", "bright_cyan"),
+        ("║     ██████╗ ███████╗███╗   ██╗██╗ ██████╗ ███╗   ███╗ █████╗  ║", "cyan"),
+        ("║     ██╔══██╗██╔════╝████╗  ██║██║██╔════╝ ████╗ ████║██╔══██╗ ║", "bright_cyan"),
+        ("║     ██║  ██║█████╗  ██╔██╗ ██║██║██║  ███╗██╔████╔██║███████║ ║", "cyan"),
+        ("║     ██║  ██║██╔══╝  ██║╚██╗██║██║██║   ██║██║╚██╔╝██║██╔══██║ ║", "bright_cyan"),
+        ("║     ██████╔╝███████╗██║ ╚████║██║╚██████╔╝██║ ╚═╝ ██║██║  ██║ ║", "cyan"),
+        ("║     ╚═════╝ ╚══════╝╚═╝  ╚═══╝╚═╝ ╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═╝ ║", "bright_cyan"),
+        ("║                                                               ║", "bright_cyan"),
+    ]
+    
+    # Print ASCII art lines
+    for line, style in banner_lines:
+        console.print(line, style=style)
+    
+    # Print text lines with proper centering (banner content width is 63 chars)
+    banner_content_width = 63
+    
+    # Version line - centered with colored border
+    version_str = "CRACKER v2.0"
+    version_padding = (banner_content_width - len(version_str)) // 2
+    version_line = f"[bright_cyan]║[/bright_cyan]{' ' * version_padding}[bold bright_cyan]{version_str}[/bold bright_cyan]{' ' * (banner_content_width - len(version_str) - version_padding)}[bright_cyan]║[/bright_cyan]"
+    console.print(version_line)
+    
+    # Educational line - centered with colored border
+    edu_str = "Educational Purpose Only - Use Responsibly"
+    edu_padding = (banner_content_width - len(edu_str)) // 2
+    edu_line = f"[bright_cyan]║[/bright_cyan]{' ' * edu_padding}[yellow]{edu_str}[/yellow]{' ' * (banner_content_width - len(edu_str) - edu_padding)}[bright_cyan]║[/bright_cyan]"
+    console.print(edu_line)
+    
+    # GitHub line - centered with colored border
+    github_str = "by @Iamdungx"
+    github_padding = (banner_content_width - len(github_str)) // 2
+    github_line = f"[bright_cyan]║[/bright_cyan]{' ' * github_padding}[dim]by [bold bright_blue]@Iamdungx[/bold bright_blue][/dim]{' ' * (banner_content_width - len(github_str) - github_padding)}[bright_cyan]║[/bright_cyan]"
+    console.print(github_line)
+    
+    # Bottom border
+    console.print("╚═══════════════════════════════════════════════════════════════╝", style="bright_cyan")
     
     # Parse chains
     chain_mapping = {
@@ -271,6 +316,8 @@ def scan(
                 selected_chains.append(chain_mapping[c.lower()])
             else:
                 console.print(f"[yellow]Unknown chain: {c}[/yellow]")
+        
+        # Fallback to default chains if none were valid
         if not selected_chains:
             selected_chains = [Chain.BITCOIN, Chain.ETHEREUM]
     else:

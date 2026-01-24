@@ -15,8 +15,9 @@ class EthereumProvider(BalanceProvider):
     """
     Ethereum balance provider using Etherscan API V2.
     
-    Uses the V2 API format which requires chainid parameter and no longer
-    requires the 'module' parameter from V1.
+    Uses the V2 API format which requires chainid parameter.
+    The 'module' parameter is still required in V2 for compatibility with
+    the API endpoints (e.g., module=account for account-related actions).
     
     API Documentation: https://docs.etherscan.io/v2-migration
     """
@@ -56,11 +57,12 @@ class EthereumProvider(BalanceProvider):
         """
         Build Etherscan API V2 URL for balance check.
         
-        V2 format: chainid, action, address, and apikey are required.
-        The 'module' parameter from V1 is no longer needed in V2.
+        V2 format requires chainid, module, action, address, and apikey.
+        The module parameter is still required in V2 for compatibility.
         """
         params = [
             f"chainid={self.CHAIN_ID}",
+            f"module=account",
             f"action=balance",
             f"address={address}",
         ]
