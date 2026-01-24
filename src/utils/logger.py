@@ -67,8 +67,17 @@ class SeedMaskingFilter(logging.Filter):
     Logging filter that masks seed phrases for security.
     Only shows first 2 and last 2 words of seed phrases.
     
-    Supports explicit masking via MaskedValue wrapper and heuristic
-    detection for BIP39 seed phrases (12, 15, 18, 21, or 24 words).
+    Supports two masking approaches:
+    1. **Explicit masking (recommended)**: Use MaskedValue wrapper class
+       to explicitly mark seed phrases. This is the most reliable method.
+       Example: logger.info(f"Generated seed: {MaskedValue(seed)}")
+    
+    2. **Heuristic detection (fallback)**: Automatically detects potential
+       BIP39 seed phrases (12, 15, 18, 21, or 24 words) in log messages
+       containing the word "seed". This is less reliable and may have
+       false positives/negatives.
+    
+    The filter prioritizes explicit MaskedValue instances over heuristic detection.
     """
     
     def __init__(self, enabled: bool = True):
@@ -88,11 +97,15 @@ class SeedMaskingFilter(logging.Filter):
         """
         Attempt to mask seed phrases in the message.
         
-        Uses conservative heuristics:
+        Uses conservative heuristics to reduce false positives:
         - Requires "seed" keyword in message (case-insensitive)
         - Only checks for valid BIP39 lengths (12, 15, 18, 21, 24 words)
-        - All words must be lowercase alphabetic
-        - More specific matching to reduce false positives
+        - All words must be lowercase alphabetic, min 3 chars
+        - Words must be separated by spaces (no punctuation within words)
+        - Mask all detected seed phrases in the message
+        
+        Note: For explicit masking, use MaskedValue wrapper class instead.
+        This heuristic is a fallback for cases where MaskedValue is not used.
         
         Args:
             message: Log message to process
@@ -100,30 +113,44 @@ class SeedMaskingFilter(logging.Filter):
         Returns:
             Message with seed phrases masked if detected
         """
-        # Only process if message contains "seed" keyword
+        # Only process if message contains "seed" keyword (reduces false positives)
         if "seed" not in message.lower():
             return message
         
         words = message.split()
+        if len(words) < min(VALID_SEED_LENGTHS):
+            return message
         
-        # Check for each valid seed length
+        # Track which word indices have been masked to avoid overlapping masks
+        masked_indices = set()
+        result_words = words.copy()
+        
+        # Check for each valid seed length (longest first to catch longer seeds first)
         for seed_length in sorted(VALID_SEED_LENGTHS, reverse=True):
             if len(words) < seed_length:
                 continue
             
-            # Try to find a sequence of the exact seed length
+            # Try to find sequences of the exact seed length
             for i in range(len(words) - seed_length + 1):
+                # Skip if any word in this range is already masked
+                if any(idx in masked_indices for idx in range(i, i + seed_length)):
+                    continue
+                
                 potential_seed = words[i:i+seed_length]
                 
                 # Check if all words are lowercase alphabetic (BIP39 words are lowercase)
-                if all(w.isalpha() and w.islower() and len(w) >= 3 for w in potential_seed):
-                    # Mask the seed phrase
+                # BIP39 words are 3-8 characters, all lowercase
+                if all(
+                    w.isalpha() and w.islower() and 3 <= len(w) <= 8
+                    for w in potential_seed
+                ):
+                    # Mask the seed phrase: show first 2 and last 2 words
                     masked = potential_seed[:2] + ["****"] * (seed_length - 4) + potential_seed[-2:]
-                    words[i:i+seed_length] = masked
-                    # Only mask the first match to avoid over-masking
-                    break
+                    result_words[i:i+seed_length] = masked
+                    # Mark these indices as masked
+                    masked_indices.update(range(i, i + seed_length))
         
-        return " ".join(words)
+        return " ".join(result_words)
 
 
 class ColoredFormatter(logging.Formatter):

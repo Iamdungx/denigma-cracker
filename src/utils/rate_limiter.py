@@ -46,7 +46,18 @@ class RateLimiter:
         Acquire a token, waiting if necessary.
         
         This method will block until a token is available.
+        
+        Raises:
+            ValueError: If rate is 0 or negative (defensive check)
         """
+        # Defensive check: ensure rate is still valid (protects against mutation)
+        if self.rate <= 0:
+            raise ValueError(
+                f"Rate limiter has invalid rate: {self.rate}. "
+                f"Rate must be greater than 0. This should not happen if "
+                f"the limiter was properly initialized."
+            )
+        
         async with self._lock:
             while True:
                 now = time.monotonic()
@@ -64,6 +75,7 @@ class RateLimiter:
                     return
                 
                 # Calculate wait time for next token
+                # Rate is guaranteed to be > 0 due to check above
                 wait_time = (1 - self._tokens) / self.rate
                 logger.debug(f"Rate limit: waiting {wait_time:.2f}s")
                 await asyncio.sleep(wait_time)
