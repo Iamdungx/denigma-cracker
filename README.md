@@ -1,100 +1,514 @@
-# DEnigmaCracker
+# DEnigmaCracker v2.0-beta
 
-![DEnigma Review](https://github.com/Iamdungx/denigma-cracker/blob/dev/assets/img/review.gif)
+<div align="center">
 
-DEnigmaCracker is a tool for brute-forcing crypto wallets, sourced and developed from [yaron4u's EnigmaCracker](https://github.com/yaron4u/EnigmaCracker) by me.
+![DEnigmaCracker Banner](assets/img/banner.png)
 
-## ⚠️ Disclaimer ⚠️
+[![Python Version](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/) [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE) [![Version](https://img.shields.io/badge/version-2.0.0--beta-orange.svg)](https://github.com/Iamdungx/DEnigma-Cracker/releases) [![Status](https://img.shields.io/badge/status-beta-yellow.svg)](https://github.com/Iamdungx/DEnigma-Cracker) [![Code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-This script is developed for educational and research purposes only.
+<!-- GitHub Statistics -->
+[![GitHub stars](https://img.shields.io/github/stars/Iamdungx/DEnigma-Cracker?style=social)](https://github.com/Iamdungx/DEnigma-Cracker/stargazers) [![GitHub forks](https://img.shields.io/github/forks/Iamdungx/DEnigma-Cracker?style=social)](https://github.com/Iamdungx/DEnigma-Cracker/network/members) [![GitHub issues](https://img.shields.io/github/issues/Iamdungx/DEnigma-Cracker)](https://github.com/Iamdungx/DEnigma-Cracker/issues) [![GitHub pull requests](https://img.shields.io/github/issues-pr/Iamdungx/DEnigma-Cracker)](https://github.com/Iamdungx/DEnigma-Cracker/pulls)
 
-**By using this code, you agree to the following:**
+**An educational and research-oriented Python tool for understanding cryptocurrency wallet systems**
 
-1. You will not use this code, in whole or in part, for malicious intent, including but not limited to unauthorized mining on third-party systems.
-2. You will seek explicit permission from any and all system owners before running or deploying this code.
-3. You understand the implications of running mining software on hardware, including the potential for increased wear and power consumption.
-4. The creator of this script cannot and will not be held responsible for any damages, repercussions, or any negative outcomes that result from using this script.
+[Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [Contributing](#-contributing) • [Support](#-support)
 
-If you do not agree to these terms, please do not use or distribute this code.
+</div>
 
-## **How it works?**
-
-We'll begin by delving into the foundational concepts. Upon establishing a wallet through platforms like **Exodus/TrustWallet** or similar services, users receive a **mnemonic phrase (_seed-phrase_)** comprised of **12 unique words**. The selection of words for this passphrase isn't arbitrary; they are derived from a specific lexicon containing **2048 potential words**. From this collection, the passphrase words are selected at random (**_the entire list of these words is accessible_** [**_HERE_**](https://www.blockplate.com/pages/bip-39-wordlist)). Utilizing this passphrase, an individual has the capability to access their wallet on any device and manage their assets. My application operates by employing brute force techniques to decipher these passphrases.
-
-If EnigmaCracker finds a wallet with a balance, it will create `wallets_with_balance.txt` file that will contain the info of the discovered wallet.
-
-Upon execution, EnigmaCracker generates a comprehensive log file named `Log/DEnigmaCracker_[time].log`, which neatly records the entire session history for review and analysis.
-
-# Technical Details
-
-## Master Seed and Wallet Generation
-
-![derivation](https://github.com/yaron4u/EnigmaCracker/assets/67191566/bbdcaab5-030f-4e03-b1cb-c816253d27df)
-
-EnigmaCracker is engineered around the key principle of the **Master Seed** in cryptocurrency wallet generation, as per the standards described in BIP 32 for Hierarchical Deterministic (HD) Wallets. The Python script provided within this repository is designed to create a mnemonic phrase (also known as a seed phrase), which essentially acts as the **Master Seed** from which all cryptographic keys can be derived.
-
-For a more in-depth understanding of this topic, feel free to explore the detailed documentation available here: [BIP 32 wiki](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki).
-
-### The Role of Master Seed in EnigmaCracker
-
-The script leverages the `bip_utils` library to generate a 12-word BIP39 mnemonic. This mnemonic is a human-readable representation of the wallet's **Master Seed**. This seed is then used to generate seeds for various cryptocurrency wallets, specifically for Bitcoin (BTC) and Ethereum (ETH), by following the BIP44 protocol that defines a logical hierarchy for deterministic wallets.
-
-### Code Workflow:
-
-1. **Seed Generation**: The `bip()` function in the script calls upon the BIP39 protocol to generate a new 12-word mnemonic. This is the first and most crucial step in the HD wallet creation process.
-    
-2. **Seed to Wallet Transformation**: The functions `bip44_ETH_wallet_from_seed` and `bip44_BTC_seed_to_address` take the generated mnemonic and produce the corresponding wallet addresses for Ethereum and Bitcoin, respectively. These addresses are derived from the master seed and follow a deterministic path outlined by BIP44, ensuring that each mnemonic generates a unique and recoverable set of addresses.
-    
-3. **Balance Checking**: With the generated addresses, the script uses online blockchain explorers through their APIs (Etherscan for Ethereum and Blockchain.info for Bitcoin) to check if the generated wallets contain any balance.
-    
-4. **Logging Results**: If a balance is found, the script writes the mnemonic, the derived addresses, and the wallet balances to a file (`wallets_with_balance.txt`), preserving the potentially valuable information for further examination.
-
-Through the integration of BIP39 and BIP44 protocols, EnigmaCracker serves as a practical example of how the **Master Seed** forms the bedrock of cryptocurrency wallets, allowing for a secure, hierarchical structure of key derivation and management.
-
-## Installation
-
-Clone the repository using:
-
-```bash
-git clone https://github.com/Iamdungx/DEnigma-Cracker
-```
-Remember to install the required libraries using:
-```bash
-pip install -r requirements.txt
-```
-## Configuration
-
-1. Obtain an Etherscan API key following the instructions [here](https://docs.etherscan.io/getting-started/viewing-api-usage-statistics).
-2. Navigate to the script's directory and insert your API key in DEnigmaCracker.env:
-```bash
-# In assets/env/DEnigmaCracker.env
-ETHERSCAN_API_KEY=[your_api_key_here] <--- Replace with your actual API key
-```
-## Execution
-
-Run DEnigmaCracker from the command line:
-
-```bash
-cd path/to/DEnigmaCracker
-python DEnigmaCracker.py
-```
-### Note
-- The Docker environment provides an isolated and consistent runtime for EnigmaCracker.
-- Ensure that the Docker daemon is running before executing these commands.
-- Adjustments to the script or environment variables require a rebuild of the Docker image for changes to take effect.
-- **Modified Script for Docker**: The Docker version of EnigmaCracker runs a slightly modified version of the script (`EC.py`) compared to the standalone version. These modifications are specifically tailored for the Docker environment to ensure smooth operation within a container. For instance, any code segments that require GUI interaction or OS-specific commands have been adjusted or removed since Docker containers typically run in a headless (non-GUI) environment.
-- **Streamlined Dependencies**: The `requirements.txt` file for the Docker version contains fewer libraries. This is because Docker provides a controlled environment where only the necessary dependencies are included to run the script. This streamlined approach helps in reducing the overall size of the Docker image and improves the efficiency of the script within the container.
 ---
+
+DEnigmaCracker is an educational and research-oriented Python tool that demonstrates the technical implementation of BIP-39 mnemonic generation, BIP-44 hierarchical deterministic (HD) wallet key derivation, and blockchain address generation for Bitcoin, Ethereum, and BNB Smart Chain networks.
+
+This project serves as a practical reference implementation for understanding how cryptocurrency wallet systems work at a technical level, including the relationship between seed phrases, master seeds, derivation paths, and blockchain addresses.
+
+**Original work**: This project is sourced and developed from [yaron4u's EnigmaCracker](https://github.com/yaron4u/EnigmaCracker) by [@Iamdungx](https://github.com/Iamdungx).
+
+## ✨ Features
+
+- 🔄 **Async & Concurrent**: Multi-worker support for parallel processing
+- 🔒 **Secure Logging**: Automatic seed phrase masking in logs
+- 📊 **Real-time Dashboard**: Live status updates with Rich terminal UI
+- 🔗 **Multi-chain Support**: Bitcoin, Ethereum, and BNB Smart Chain
+- ⚙️ **Configurable**: YAML config files and environment variables
+- 🎨 **Beautiful CLI**: Rich terminal interface with colors and progress tracking
+- 📝 **Type-safe**: Comprehensive type hints throughout
+- 🧪 **Tested**: Test suite with pytest
+- 📚 **Well Documented**: Professional documentation and examples
+
+---
+
+## ⚠️ CRITICAL DISCLAIMER ⚠️
+
+**EDUCATIONAL AND RESEARCH PURPOSES ONLY**
+
+This software is provided **exclusively for educational and research purposes**. It is designed to help researchers, students, and developers understand:
+
+- How BIP-39 mnemonic phrase generation works
+- How BIP-44 hierarchical deterministic wallets derive addresses
+- How blockchain APIs are used to query address balances
+- The mathematical properties of cryptographic key spaces
+
+**IMPORTANT LIMITATIONS:**
+
+1. **This tool CANNOT realistically find funded wallets.** The probability of generating a mnemonic phrase that corresponds to a funded wallet is mathematically negligible (see Mathematical Infeasibility section below).
+
+2. **This tool does NOT reduce the cryptographic key space.** It performs random generation within the full BIP-39 key space, which contains 2^128 or 2^256 possible combinations depending on the mnemonic length.
+
+3. **This tool does NOT exploit any cryptographic weaknesses.** It operates entirely within the standard BIP-39/BIP-44 protocols as they are designed.
+
+**LEGAL AND ETHICAL CONSIDERATIONS:**
+
+- This software must not be used for any unauthorized access attempts
+- This software must not be used to attempt to access wallets that do not belong to you
+- Users are solely responsible for compliance with all applicable laws and regulations
+- The authors and contributors assume no liability for misuse of this software
+
+**By using this software, you acknowledge that:**
+
+- You understand this is an educational tool with no practical utility for finding funded wallets
+- You will use this software only for legitimate educational or research purposes
+- You will not use this software for any illegal or unauthorized activities
+- You understand and accept all legal and ethical responsibilities associated with its use
+
+---
+
+## 📑 Table of Contents
+
+- [⚠️ Critical Disclaimer](#️-critical-disclaimer)
+- [✨ Features](#-features)
+- [🔧 How It Works](#-how-it-works)
+- [📊 Mathematical Infeasibility](#-mathematical-infeasibility)
+- [🚀 Installation](#-installation)
+- [⚙️ Configuration](#️-configuration)
+- [💻 Usage](#-usage)
+- [⚡ Performance Notes](#-performance-notes)
+- [🏗️ Technical Architecture](#️-technical-architecture)
+- [⚖️ Ethical and Legal Considerations](#️-ethical-and-legal-considerations)
+- [📝 Version 2.0-beta Details](#-version-20-beta-technical-details)
+- [📸 Screenshots](#-screenshots)
+- [🤝 Contributing](#-contributing)
+- [📄 License](#-license)
+- [🙏 Acknowledgments](#-acknowledgments)
+- [💬 Support](#-support)
+
+---
+
+## 🔧 How It Works
+
+DEnigmaCracker demonstrates the technical workflow of cryptocurrency wallet systems by implementing the following components:
+
+### 1. Mnemonic Generation (BIP-39)
+
+The tool generates mnemonic phrases (seed phrases) using the BIP-39 standard. A mnemonic phrase consists of 12, 15, 18, 21, or 24 words selected from a standardized wordlist of 2,048 words. These words are generated using cryptographically secure random number generation.
+
+**Technical Implementation:**
+- Uses the `bip-utils` library for BIP-39 compliant mnemonic generation
+- Each mnemonic represents a 128-bit or 256-bit entropy value
+- The wordlist is standardized and publicly available: [BIP-39 Wordlist](https://www.blockplate.com/pages/bip-39-wordlist)
+
+### 2. Master Seed Derivation
+
+The mnemonic phrase is converted into a master seed using the PBKDF2 key derivation function (as specified in BIP-39). This master seed serves as the root cryptographic material from which all wallet keys are derived.
+
+### 3. Hierarchical Deterministic (HD) Wallet Derivation (BIP-44)
+
+Using the BIP-44 standard, the master seed is used to derive wallet addresses for different cryptocurrency networks:
+
+- **Bitcoin (BTC)**: Derivation path `m/44'/0'/0'/0/0`
+- **Ethereum (ETH)**: Derivation path `m/44'/60'/0'/0/0`
+- **BNB Smart Chain (BNB)**: Derivation path `m/44'/60'/0'/0/0` (uses Ethereum derivation)
+
+Each derivation path follows a deterministic hierarchy, ensuring that the same mnemonic always generates the same addresses.
+
+### 4. Balance Query
+
+The generated addresses are queried against public blockchain APIs to check for balance:
+
+- **Ethereum/BNB**: Etherscan API and BscScan API
+- **Bitcoin**: Blockchain.info API
+
+The tool implements rate limiting to respect API provider limits and includes retry logic for network resilience.
+
+### 5. Concurrent Processing
+
+The implementation uses asynchronous I/O (`asyncio`) with multiple worker threads to process wallet generation and balance checking concurrently, demonstrating efficient parallel processing patterns.
+
+---
+
+## 📊 Mathematical Infeasibility
+
+**The probability of finding a funded wallet through random mnemonic generation is effectively zero.**
+
+### Key Space Analysis
+
+For a 12-word BIP-39 mnemonic:
+- **Entropy**: 128 bits
+- **Total possible combinations**: 2^128 = 3.4 × 10^38
+- **Wordlist size**: 2,048 words
+- **Valid combinations**: 2,048^12 (with checksum validation)
+
+For a 24-word BIP-39 mnemonic:
+- **Entropy**: 256 bits
+- **Total possible combinations**: 2^256 = 1.16 × 10^77
+
+### Probability Calculation
+
+Even if we assume there are 1 billion funded wallets in existence (a generous overestimate), the probability of randomly generating a mnemonic that corresponds to one of these wallets is:
+
+- **12-word mnemonic**: P ≈ 10^9 / 2^128 ≈ 2.9 × 10^-30
+- **24-word mnemonic**: P ≈ 10^9 / 2^256 ≈ 8.6 × 10^-69
+
+These probabilities are so small that they are considered mathematically negligible. To put this in perspective:
+
+- The probability is many orders of magnitude smaller than the probability of winning multiple consecutive lottery jackpots
+- Even with billions of attempts per second, it would take longer than the age of the universe to have a reasonable chance of success
+- The computational resources required would exceed what is physically possible
 
 ### Conclusion
 
-Setting up EnigmaCracker on an AWS EC2 instance with your Docker image in Amazon ECR offers improved scalability and reliability for your wallet scanning tasks. This approach provides a streamlined and effective solution to harness EnigmaCracker’s full potential on a powerful cloud platform.
+This tool demonstrates the **cryptographic strength** of BIP-39/BIP-44 systems. The mathematical properties that make random wallet discovery infeasible are the same properties that make these systems secure for legitimate use.
 
 ---
-## NEW Updates on Version 1.1
 
-- **Handling Sensitive Information**: Ensure sensitive information, like the seed, is not logged unnecessarily to avoid security risks.
+## 🚀 Installation
 
-- **API Rate Limits and Error Handling**: Consider implementing a more robust retry mechanism to handle rate limits and API errors.
+### Prerequisites
 
-- **Modularize the Code**: Breaking down the script into smaller functions can improve readability and maintainability.
+- Python 3.9 or higher
+- pip (Python package manager)
+- API keys for blockchain services (optional, but required for balance checking)
+
+### Installation Steps
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Iamdungx/DEnigma-Cracker
+   cd DEnigma-Cracker
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Install the package (optional, for CLI command):**
+   ```bash
+   pip install -e .
+   ```
+
+   **Note**: If you don't install the package, you can run it using `python -m src.main scan` instead of `denigmacracker scan`.
+
+---
+
+## ⚙️ Configuration
+
+### Environment Variables
+
+1. **Copy the example environment file:**
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Edit `.env` and configure API keys:**
+   ```bash
+   # Required for Ethereum balance checking
+   # Get your key at: https://etherscan.io/apis
+   ETHERSCAN_API_KEY=your_etherscan_api_key_here
+
+   # Optional: For BNB Smart Chain balance checking
+   # Get your key at: https://bscscan.com/apis
+   BSCSCAN_API_KEY=your_bscscan_api_key_here
+
+   # Optional: Override default settings
+   LOG_LEVEL=INFO
+   SCANNER_WORKERS=4
+   ```
+
+### YAML Configuration (Optional)
+
+You can also use a YAML configuration file for more detailed settings. See `assets/config.yaml` for an example configuration.
+
+**Note**: Bitcoin balance checking uses public APIs that do not require API keys, but may have stricter rate limits.
+
+---
+
+## 💻 Usage
+
+### Basic Usage
+
+**Option 1: Using the installed command** (if you ran `pip install -e .`):
+```bash
+denigmacracker scan
+```
+
+**Option 2: Using Python module directly:**
+```bash
+python -m src.main scan
+```
+
+**Option 3: Running the main script directly:**
+```bash
+python src/main.py scan
+```
+
+### What Happens During Execution
+
+When you run the scanner, it will:
+
+1. Display a status dashboard with real-time statistics
+2. Generate random BIP-39 mnemonic phrases
+3. Derive wallet addresses for configured blockchain networks
+4. Query blockchain APIs to check address balances
+5. Log all activity to `logs/DEnigmaCracker_[timestamp].log`
+6. If a balance is found (extremely unlikely), save details to `wallets_with_balance.txt`
+
+Press `Ctrl+C` to stop the scanner gracefully.
+
+### Advanced Options
+
+```bash
+# Specify number of concurrent workers
+denigmacracker scan --workers 8
+
+# Scan specific blockchain networks
+denigmacracker scan --chain btc --chain eth
+
+# Use a custom configuration file
+denigmacracker scan --config assets/config.yaml
+
+# Enable debug logging for detailed output
+denigmacracker scan --debug
+```
+
+### Available Commands
+
+- `denigmacracker scan` - Start the wallet generation and balance checking demonstration
+- `denigmacracker config` - Display current configuration information
+
+### Command-Line Options
+
+```
+--workers, -w          Number of concurrent workers (default: 4)
+--chain, -c            Blockchain networks to scan (btc, eth, bnb). Can specify multiple.
+--derivation, -d       Derivation path standard (bip44, bip49, bip84)
+--config, -f           Path to YAML configuration file
+--debug                Enable debug-level logging
+```
+
+---
+
+## ⚡ Performance Notes
+
+### Generation Rate
+
+The tool can generate and check wallets at a rate limited by:
+
+- **API rate limits**: Blockchain API providers enforce rate limits (typically 3-10 requests per second for free tiers)
+- **Network latency**: Response times from blockchain APIs
+- **Computational overhead**: Mnemonic generation and key derivation operations
+
+Typical performance with default settings:
+- **Wallet generation**: Thousands per second (limited by API calls)
+- **Balance checking**: 2-10 checks per second (depending on API limits and network conditions)
+
+### API Rate Limits
+
+- **Etherscan**: Free tier allows 5 calls per second
+- **BscScan**: Free tier allows 5 calls per second
+- **Blockchain.info**: Public API with variable rate limits
+
+The tool implements a token bucket rate limiting algorithm to ensure compliance with API provider limits.
+
+### Resource Usage
+
+- **CPU**: Moderate (primarily for cryptographic operations)
+- **Memory**: Low (minimal memory footprint)
+- **Network**: Continuous API requests (respects rate limits)
+
+---
+
+## 🏗️ Technical Architecture
+
+### Project Structure
+
+```
+DEnigma-Cracker/
+├── src/
+│   ├── balance/          # Balance checking providers
+│   │   └── providers/    # Blockchain API provider implementations
+│   ├── wallet/           # Wallet generation and data models
+│   ├── utils/            # Utilities (logging, rate limiting, output)
+│   ├── config.py        # Configuration management
+│   └── main.py          # CLI entry point
+├── tests/               # Test suite
+├── assets/              # Configuration files and assets
+├── logs/                # Generated log files
+├── .env.example         # Environment variables template
+├── requirements.txt     # Python dependencies
+└── pyproject.toml       # Project metadata
+```
+
+### Key Components
+
+- **WalletGenerator**: Implements BIP-39 mnemonic generation and BIP-44 address derivation
+- **BalanceChecker**: Orchestrates balance checking across multiple blockchain networks
+- **BalanceProvider**: Abstract base class for blockchain API providers (Ethereum, Bitcoin, BNB)
+- **RateLimiter**: Token bucket algorithm for API rate limit compliance
+- **OutputManager**: Handles logging and result output with seed phrase masking
+
+### Dependencies
+
+- **bip-utils**: BIP-39/BIP-44 implementation
+- **aiohttp**: Asynchronous HTTP client for API requests
+- **pydantic**: Configuration management and data validation
+- **typer**: CLI framework
+- **rich**: Terminal UI and formatting
+
+---
+
+## ⚖️ Ethical and Legal Considerations
+
+### Intended Use
+
+This software is intended for:
+
+- **Educational purposes**: Understanding how cryptocurrency wallet systems work
+- **Research purposes**: Studying cryptographic key derivation and blockchain address generation
+- **Development purposes**: Learning about API integration, concurrent programming, and software architecture
+
+### Prohibited Use
+
+This software must NOT be used for:
+
+- Attempting to gain unauthorized access to cryptocurrency wallets
+- Any illegal activities
+- Violating terms of service of blockchain API providers
+- Any purpose that violates applicable laws or regulations
+
+### Legal Disclaimer
+
+- This software is provided "as-is" without any warranties
+- Users are solely responsible for ensuring their use complies with all applicable laws
+- The authors and contributors assume no liability for misuse of this software
+- Users are responsible for any costs associated with API usage
+
+### Responsible Disclosure
+
+If you discover any security vulnerabilities in this software, please report them responsibly through the project's issue tracker or by contacting the maintainers directly.
+
+---
+
+## 📝 Version 2.0-beta Technical Details
+
+### Architecture Improvements
+
+- **Asynchronous I/O**: Migrated from synchronous to asynchronous architecture using `asyncio`
+- **Concurrent Processing**: Multi-worker support for parallel wallet generation and balance checking
+- **Rate Limiting**: Token bucket algorithm implementation for API rate limit compliance
+- **Error Handling**: Robust retry mechanisms and error recovery
+- **Structured Logging**: Comprehensive logging with automatic seed phrase masking
+- **Modular Design**: Clean separation of concerns with proper package structure
+
+### Technical Stack
+
+- **Python 3.9+**: Modern Python features and type hints
+- **asyncio**: Asynchronous programming for concurrent operations
+- **Pydantic**: Type-safe configuration management
+- **Rich**: Terminal UI with colors and live updates
+- **Tenacity**: Retry logic for network resilience
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome for educational and research improvements! We appreciate your interest in making DEnigmaCracker better.
+
+### How to Contribute
+
+1. **Fork the repository**
+2. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
+3. **Make your changes** following the project's code style
+4. **Add tests** if applicable
+5. **Update documentation** as needed
+6. **Commit your changes** (`git commit -m 'Add some amazing feature'`)
+7. **Push to the branch** (`git push origin feature/amazing-feature`)
+8. **Open a Pull Request**
+
+### Contribution Guidelines
+
+- All contributions must maintain the educational and research-oriented nature of the project
+- Code should follow the existing style and architecture patterns
+- Documentation must be updated to reflect changes
+- All tests must pass before submitting pull requests
+- Please read [SECURITY.md](SECURITY.md) for security-related contributions
+
+### Contributors
+
+Thank you to all contributors who have helped improve DEnigmaCracker!
+
+<!-- Contributors list will be auto-generated by GitHub -->
+<a href="https://github.com/Iamdungx/DEnigma-Cracker/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=Iamdungx/DEnigma-Cracker" />
+</a>
+
+**Made with [contrib.rocks](https://contrib.rocks)**
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- **Original project**: [yaron4u's EnigmaCracker](https://github.com/yaron4u/EnigmaCracker)
+- **BIP-39 Wordlist**: [Blockplate](https://www.blockplate.com/pages/bip-39-wordlist)
+- **BIP Standards**: [Bitcoin Improvement Proposals](https://github.com/bitcoin/bips)
+  - [BIP-32](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki): Hierarchical Deterministic Wallets
+  - [BIP-39](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki): Mnemonic Code for Generating Deterministic Keys
+  - [BIP-44](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki): Multi-Account Hierarchy for Deterministic Wallets
+
+---
+
+## 📸 Screenshots
+
+### Status Dashboard
+
+![Status Dashboard](assets/img/status_stat.png)
+
+*Real-time statistics dashboard showing scan progress and metrics*
+
+---
+
+## 💬 Support
+
+For technical questions, bug reports, or contributions, please visit the [GitHub Issues](https://github.com/Iamdungx/DEnigma-Cracker/issues) page.
+
+### Get Help
+
+- 📖 **Documentation**: Check the [README](README.md) and [CHANGELOG](CHANGELOG.md)
+- 🐛 **Report Bugs**: [Open an issue](https://github.com/Iamdungx/DEnigma-Cracker/issues/new?template=bug_report.md)
+- 💡 **Request Features**: [Open an issue](https://github.com/Iamdungx/DEnigma-Cracker/issues/new?template=feature_request.md)
+- 🔒 **Security Issues**: See [SECURITY.md](SECURITY.md) for responsible disclosure
+
+---
+
+## 📊 Project Status
+
+![GitHub last commit](https://img.shields.io/github/last-commit/Iamdungx/DEnigma-Cracker) ![GitHub release](https://img.shields.io/github/release/Iamdungx/DEnigma-Cracker) ![GitHub repo size](https://img.shields.io/github/repo-size/Iamdungx/DEnigma-Cracker) ![GitHub language count](https://img.shields.io/github/languages/count/Iamdungx/DEnigma-Cracker) ![GitHub top language](https://img.shields.io/github/languages/top/Iamdungx/DEnigma-Cracker)
+
+---
+
+<div align="center">
+
+**⭐ Star this repo if you find it useful! ⭐**
+
+**Remember**: This tool is for **educational and research purposes only**. It demonstrates how cryptocurrency wallet systems work but cannot realistically find funded wallets due to the mathematical properties of cryptographic key spaces. Use responsibly and in compliance with all applicable laws and regulations.
+
+Made with ❤️ by [@Iamdungx](https://github.com/Iamdungx)
+
+[⬆ Back to Top](#denigmacracker-v20-beta)
+
+</div>

@@ -1,0 +1,57 @@
+# DEnigmaCracker v2.0-beta Configuration
+# Copy this file and customize as needed
+
+# Application settings
+app_name: DEnigmaCracker
+version: "2.0.0-beta"
+debug: false
+
+# Ethereum configuration
+ethereum:
+  enabled: true
+  api_url: https://api.etherscan.io/v2/api
+  # API key should be set in .env file: ETHERSCAN_API_KEY=your_key
+  rate_limit: 2  # requests per second (Etherscan free tier: 3/sec)
+  timeout: 30    # seconds
+  max_retries: 3
+  retry_delay: 5
+
+# Bitcoin configuration
+bitcoin:
+  enabled: true
+  api_url: https://blockchain.info
+  rate_limit: 10
+  timeout: 30
+  max_retries: 3
+  retry_delay: 5
+
+# BNB Smart Chain configuration
+bnb:
+  enabled: false  # Set to true to enable
+  api_url: https://api.bscscan.com/api
+  # API key should be set in .env file: BSCSCAN_API_KEY=your_key
+  rate_limit: 5
+  timeout: 30
+  max_retries: 3
+  retry_delay: 5
+
+# Logging configuration
+logging:
+  level: INFO  # DEBUG, INFO, WARNING, ERROR
+  file_enabled: true
+  console_enabled: true
+  mask_seed: true  # Mask seed phrases in logs for security
+
+# Scanner configuration
+scanner:
+  workers: 4
+  batch_size: 10
+  save_progress: true
+  progress_file: progress.json
+
+# Notification configuration (optional)
+notification:
+  enabled: false
+  telegram_bot_token: null
+  telegram_chat_id: null
+  discord_webhook_url: null
